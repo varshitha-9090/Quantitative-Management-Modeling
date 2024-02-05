@@ -1,0 +1,107 @@
+---
+title: "Assignment_3"
+author: "phani varshitha"
+date: "2023-10-15"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+AED_data = matrix(c(20,14,25,400,100,12,15,14,300,125,10,12,15,500,150,80,90,70,"-","-"),ncol = 5, byrow = TRUE)
+colnames(AED_data)= c ("WH1","WH2","WH3","production cost","production capacity")
+rownames(AED_data)=c("Plant_A","Plant_B","Plant_c","monthly demand")
+AED_data=as.table(AED_data)
+AED_data
+```
+#objective function
+$$TC\hspace{0.1cm}=420x_{11}+\hspace{0.1cm}414x_{12}+\hspace{0.1cm}425x_{13}+\hspace{0.1cm}312x_{21}+\hspace{0.1cm}315x_{22}+\hspace{0.1cm}314x_{23}+\hspace{0.1cm}510x_{31}
++\hspace{0.1cm}512x_{32}+\hspace{0.1cm}515x_{33}$$
+```{r}
+library(lpSolve)
+AED_2 = matrix(c(420,414,425,100,"p1",312,315,314,125,"p2",510,512,515,150,"p3",80,90,70,250,"-","q1","q2","q3"),ncol = 5,nrow = 5,byrow = TRUE)
+colnames(AED_2)=c("WH1","WH2","WH3","production capacity","dual_supply")
+rownames(AED_2)=c("Plant_A","Plant_B","Plant_c","monthly demand","dual-demand")
+AED_2= as.table(AED_2)
+AED_2
+```
+# dual constraints 
+$$ \hspace{.1cm}X_{11}+X_{12}+X_{13}\le100$$
+$$ \hspace{.1cm}X_{21}+X_{22}+X_{23}\le125$$
+$$ \hspace{.1cm}X_{31}+X_{32}+X_{33}\le150$$
+#3.demand constraint
+$$ \hspace{.1cm}X_{11}+X_{11}+X_{11}\ge80$$
+$$ \hspace{.1cm}X_{12}+X_{22}+X_{32}\ge90$$
+$$ \hspace{.1cm}X_{13}+X_{23}+X_{33}\ge70$$
+#non-negativity of variables
+$$ \hspace{.1cm}x_{ij}\ge0\hspace{0.1cm}where\hspace{0.1cm}i=1,2,3\hspace{0.1cm}and\hspace{0.1cm}j=1,2,3$$
+I took on the transportation issue in the R programming language, which is intrinsically unbalanced because of an imbalance between supply and demand. In the fourth column of the cost matrix, I included a "dummy" variable to account for the case where demand is 10 units short. The dummy variable has a demand of 10 units and a transportation cost of 0. Even if the supply and demand limitations in the mathematical model are originally unbalanced, this modification helps to assure that they are.
+
+```{R}
+
+# AEDs_Costs matrix
+AEDs_Costs <- matrix(c(420,414,425,0,
+312,315,314,0,
+510,512,515,0),ncol = 4,byrow=TRUE)
+## Set the names of the rows (constraints) and columns (decision variables)
+colnames(AEDs_Costs) <- c("WareHouse1", "WareHouse2", "WareHouse3","Dummy")
+rownames(AEDs_Costs) <- c("Plant A", "Plant B", "Plant C")
+AEDs_Costs
+```
+# performing signs and right hand side 
+```{r}
+row.signs = rep("<=",3)
+row.rhs = c(100,125,150)
+col.signs = rep(">=",4)
+col.rhs = c(80,90,70,10)
+```
+#solve lp model
+```{r}
+lptrans = lp.transport(AEDs_Costs,"min",row.signs,row.rhs,col.signs,col.rhs)
+```
+
+```{r}
+lptrans$solution
+```
+```{r}
+lptrans$objval
+```
+
+```{r}
+#Objective function
+obj <- c(420, 414, 425, 312, 315, 314, 510, 512, 515)
+
+# Coefficients matrix for constraints (lhs)
+lhs <- matrix(c(1, 1, 1, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 1, 1, 1, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 1, 1, 1,
+                1, 0, 0, 1, 0, 0, 1, 0, 0,
+                0, 1, 0, 0, 1, 0, 0, 1, 0,
+                0, 0, 1, 0, 0, 1, 0, 0, 1), nrow = 6, byrow = TRUE)
+
+# Right-hand side values for constraints (rhs)
+rhs <- c(100, 125, 150, 80, 90, 70)
+
+# Define the direction of inequalities (equalities)
+dir <- c("<=", "<=", "<=", "=", "=", "=")
+
+# Solve the linear programming problem
+lp=lp("min", obj, lhs, dir, rhs)
+
+# Extract the solution
+solution <- lp$solution
+
+# Print the optimal solution
+print(solution)
+
+```
+**The interpretation of the dual variables** 
+
+For the supply constraints(1,2,3): Dual variables indicate the marginal cost of producing an additional unit of the product at each plant. A higher dual variable value for a plant implies that increasing production capacity at that plant would incur a higher cost compared to the other plants.
+
+For the demand constraints(1,2,3): Dual variables represent the marginal revenue or profit obtained by supplying an additional unit of the product to each warehouse. A higher dual variable value for a warehouse suggests that fulfilling additional demand at that warehouse would yield a higher profit compared to the other warehouses.

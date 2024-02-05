@@ -1,0 +1,255 @@
+---
+title: "QMM_GoalProgramming"
+author: "phani varshitha"
+date: "2023-11-06"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question
+
+The Research and Development Division of the Emax Corporation has developed three new
+products. A decision now needs to be made on which mix of these products should be produced. Management wants primary consideration given to three factors: total profit, stability in the workforce, and achieving an increase in the company’s earnings next year from the $60 million achieved this year. In particular, using the units given in the following table, they want to Maximize Z = P - 5C - 2D, where
+P = total (discounted) profit over the life of the new products,
+C = change (in either direction) in the current level of employment,
+D = decrease (if any) in next year’s earnings from the current year’s level.
+The amount of any increase in earnings does not enter into Z, because management is concerned primarily with just achieving some increase to keep the stockholders happy. (It has mixed feelings about a large increase that then would be difficult to surpass in subsequent years.)
+The impact of each of the new products (per unit rate of production) on each of these factors is shown in the following table:
+
+```{r}
+library(kableExtra)
+df <- data.frame(Factor = c("Total_Profit","Employment_Level","Earning_next_year"),
+                   "1" = c(15,8,6),
+                   "2" = c(12,6,5),
+                   "3" = c(20,5,4),
+                   Goal = c("Maximize","=70",">=60"),
+                   Units = c("Millions_of_dollars","Hundreds_of_workers","Millions_of_dollars"))
+```
+
+#Creating the table's outline
+```{r}
+df %>% 
+  kable(align = "c") %>% 
+  kable_classic() %>% 
+  add_header_above(header = c(" "=1,"Product"=3," "=2)) %>%
+  add_header_above(header = c(" "=1,"Unit contribution"=3," "=2)) %>%
+  column_spec(1,border_right = TRUE) %>%
+  column_spec(4,border_right = TRUE) %>%
+  column_spec(5,border_right = TRUE)
+```
+#Questions:
+1. Define y1+ and y1-, respectively, as the amount over (if any) and the amount under (if any)
+the employment level goal. Define y2+ and y2- in the same way for the goal regarding earnings 
+next year. Define x1, x2, and x3 as the production rates of Products 1, 2, and 3,
+respectively. With these definitions, use the goal programming technique to express y1+,
+y1- , y2+ and y2- algebraically in terms of x1, x2, and x3. Also, express P in terms of x1, x2,
+and x3.
+2. Express management’s objective function in terms of x1, x2, x3, y1+, y1- , y2+ and y2-.
+3. Formulate and solve the linear programming model. What are your findings?
+
+
+#ANSWERS:
+
+1. We have production rates of the first, second and the third good as  $$x_1$$ , $$x_2$$ and $$x_3$$ . Then we can write the constraints in terms of these products as below:
+
+(i)$$8x_{1} + 6x_{2} + 5x_{3} = 70$$
+
+
+(ii) $$6x_{1} + 5x_{2} + 4x_{3} \ge 60$$
+
+We can write these two constraints in deviation form as below:
+
+a)$$y_1 = 8x_{1} + 6x_{2} + 5x_{3}-70$$
+b)$$y_2 = 6x_{1} + 5x_{2} + 4x_{3}-60$$
+
+Where, actual employment level = $$8x_{1} + 6x_{2} + 5x_{3}$$ and profit requirement = 70. So, could be positive,negative or zero depending on whether positive or negative part is greater. Similar explanation apply to other constraint as well.
+
+Let’s define $$y_i = y_i^{+} - y_i^{-}$$
+
+That is,
+
+$$y_1 = y_1^{+} - y_1^{-}$$
+
+$$y_2 = y_2^{+} - y_2^{-}$$
+
+
+where,
+
+$$y_1^{+}$$ is a positive deviation or over achievement of employment level.
+
+$$y_1^-$$ is a negative deviation or under achievement of employment level.
+
+$$y_2^{+}$$ is a positive deviation or over achievement of earning next year.
+
+$$y_2^-$$ is a negative deviation or under achievement of earning next year.
+
+Then we can write the above two constraints as-
+
+$$y_1^{+} - y_1^{-} = 8x_{1} + 6x_{2} + 5x_{3}-70$$
+
+$$y_2^{+} - y_2^{-} = 6x_{1} + 5x_{2} + 4x_{3}-60$$
+
+Some simple math yields-
+
+$$8x_{1} + 6x_{2} + 5x_{3}-(y_1^{+} - y_1^{-}) = 70$$
+
+$$6x_{1} + 5x_{2} + 4x_{3}-(y_2^{+} - y_2^{-}) = 60$$
+
+In the problem statement, it's mentioned that P represents the total (discounted) profit over the life of the new products, and it can be expressed as:
+
+$$P = 15x_{1} + 12x_{2} + 20x_{3}$$
+
+
+2. 
+Here, the goal's objective function is to be maximised. The objective is to maximise profit, sustain 70 steady jobs, and continue making at least 60 million by the following year. There is a penalty of two million for every million that earnings fall short of 60 the following year. However, there is no penalty for earning a rise (a one-sided income limitation with a lower bound). Thus, the entire earning deviation penalty is equal = $$0y_2^{+}+2y_2^{-}$$
+
+
+
+Similarly, total penalty from the employment deviation = $$5y_1^{-}+5y_1^{+}$$.
+.
+
+So , the total penalty is-  $$5y_1^{-}+5y_1^{+}+0y_2^{+}+2y_2^{-}$$
+
+Now, we already have an objective function in the question which is-
+
+$$ Maximize \hspace{0.1cm}Z = P - 5C - 2D$$
+
+Putting values of P,C,D in objective function-
+
+$$ Maximize \hspace{0.1cm}Z = 15x_{1}+12x_{2}+20x_{3}-5y_1^{-}-5y_1^{+}-0y_2^{+}-2y_2^{-}$$
+
+
+3.Mathematical formulation of the goal programming in this particular case is-
+
+$$ Maximize \hspace{0.1cm}Z = 15x_{1}+12x_{2}+20x_{3}-5y_1^{-}-5y_1^{+}-0y_2^{+}-2y_2^{-}$$
+
+Subject to the constraints-
+
+$$8x_{1} + 6x_{2} + 5x_{3}-(y_1^{+} - y_1^{-}) = 70$$
+
+$$6x_{1} + 5x_{2} + 4x_{3}-(y_2^{+} - y_2^{-}) = 60$$
+
+Non-negativity of the decision variables-
+
+$$x_1\ge0$$, $$x_2\ge0$$, $$x_3\ge0$$, $$y_1^{+}\ge0$$, $$y_1^{-}\ge0$$, $$y_2^{+}\ge0$$,  $$y_2^{-}\ge0$$
+
+#loading lpsolve package
+
+```{r}
+library(lpSolveAPI)
+```
+
+#lprec <- make.lp(2, 7): This line creates an LP (linear programming) problem instance with 2 constraints and 7 decision variables. lprec is an object that represents the LP problem.
+
+```{r}
+lprec <- make.lp(2,7)
+```
+
+#This line sets the objective function coefficients for the 7 decision variables. In this case, the coefficients are provided as a vector. A proper orderings of the variable should be maintained. Order should be consistent in objective function and constraints.
+
+```{r}
+set.objfn(lprec, c(15,12,20,-5,-5,0,-2)) 
+```
+
+#This line sets the objective sense to ‘min,’ indicating that you want to minimize the objective function.
+
+```{r}
+lp.control(lprec, sense = 'max')
+```
+
+#This line adds the first constraint to the LP problem. It specifies the coefficients of the decision variables for the first constraint. The indices argument maps the coefficients to the corresponding decision variables.
+
+```{r}
+set.row(lprec,1,c(8,6,5,-1,-1,0,0), indices = c(1,2,3,4,5,6,7))
+```
+
+#This line adds the second constraint to the LP problem, similar to the previous line but for the second constraint
+
+```{r}
+set.row(lprec,2,c(6,5,4,0,0,-1,-1), indices = c(1,2,3,4,5,6,7))
+```
+
+# This line sets the constraint types for the two constraints. In this case, they are all set to equality (=)
+
+```{r}
+set.rhs(lprec,c(70,60))
+```
+
+
+```{r}
+
+set.constr.type(lprec,c("=","="))
+```
+
+
+# This line sets lower bounds for the 7 decision variables. The lower bounds are set to zero in this case (non-negativity of the decision variables)
+
+```{r}
+
+set.bounds(lprec, lower = rep(0,7))
+```
+
+#This line assigns names to both constraints.
+
+```{r}
+lp.rownames = c("Employment level", "Earning next year")
+```
+
+# This line assigns names to the seven decision variables.p stands for plus and m for min
+```{r}
+lp.colnames = c("x1" , "x2" , "x3", "y1p" , "y1m" , "y2p" , "y2m")
+```
+
+# This line solves the LP problem using the specified constraints and objective function.
+
+```{r}
+solve(lprec)
+```
+
+
+# This line retrieves the optimal objective value of the LP problem
+```{r}
+get.objective(lprec)
+```
+# This line retrieves the values of the decision variables at the optimal solution.
+```{r}
+get.variables(lprec)
+```
+#Findings:
+
+The LP problem was successfully solved using the specified constraints and objective function.
+
+The optimal objective value of the LP problem is **275**
+
+The values of the decision variables at the optimal solution are as follows:
+
+$$x1$$ = 0
+
+$$x2$$ = 0
+
+$$x3$$ = 15
+
+$$y_1^{+}$$ = 5
+
+$$y_1^{-}$$ = 0
+
+$$y_2^{+}$$ = 0
+
+$$y_2^{-}$$ = 0
+
+
+These findings signify the most effective solution to the goal programming problem. The decision variable values offer valuable insights into the recommended production levels and the extent of deviations from the set goals for each factor, taking into consideration the defined constraints and penalties. In this solution, the primary objective was to maximize the goals while accounting for the corresponding penalties.
+
+It is evident that only $$y_1^{+}$$ has a value other than zero, indicating a positive deviation linked to the employment goal ($$y_1$$). To compute the penalty for $$y_1^{+}$$, we require the associated penalty coefficient, which, in this case, is 5 as per the provided code.
+
+Consequently, the penalty for the positive deviation in employment ($$y_1^{+}$$) amounts to 5 * 5 = 25.
+
+As for the other factors ($$y_1^{-}$$, $$y_2^{+}$$, $$y_2^{-}$$), their penalties are zero since their respective variables have zero values in the optimal solution.
+
+Thus, the penalty associated with the goal programming problem is approximately 25, and it is specifically tied to the positive deviation in employment ($$y_1^{+}$$).

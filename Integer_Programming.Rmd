@@ -1,0 +1,135 @@
+---
+title: "Integer_Programming"
+author: "phani varshitha"
+date: "2023-11-19"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(lpSolveAPI)
+```
+```{r}
+x <- read.lp("C:/Users/varshitha/Desktop/AP.lp")
+x
+```
+
+*Constraints*
+
+From first table we get constraints as:
+
+Sunday : x2+x3+x4+x5+x6≥20
+
+Monday: x3+x4+x5+x6+x7≥25
+
+Tuesday: x1+x4+x5+x6+x7≥22
+
+Wednesday: x1+x2+x5+x6+x7≥28
+
+Thursday: x1+x2+x3+x6+x7≥25
+
+Friday: x1+x2+x3+x4+x7≥22
+
+Saturday: x1+x2+x3+x4+x5≥20
+
+Objective function:
+Objective function can be deduced from the second table considering all the shifts as follows:
+
+MinZ=770x1+790x2+790x3+790x4+790x5+770x6+750x7
+
+```{r}
+solve(x)
+get.objective(x)
+get.variables(x)
+```
+
+
+The optimal solution is Z = 25550, with 
+**x_1=2,x_2=6,x_3=4,x_4=0,x_5=8,x_6=2,x_7=11.**
+
+3. find the total cost and the nummber of workers available each day.
+**sunday:**
+```{r}
+sum(get.variables(x)[c(2,3,4,5,6)])
+```
+
+**monday:**
+```{r}
+sum(get.variables(x)[c(3,4,5,6,7)])
+```
+
+**tuesday:**
+```{r}
+ 
+sum(get.variables(x)[c(4,5,6,7,1)])
+```
+
+
+**wenesday:**
+```{r}
+sum(get.variables(x)[c(2,5,6,1,7)])
+```
+
+**thursday:**
+```{r}
+
+sum(get.variables(x)[c(1,2,3,6,7)])
+```
+
+
+**friday:**
+```{r}
+
+sum(get.variables(x)[c(1,2,3,4,7)])
+```
+
+$saturday:$
+
+```{r}
+
+sum(get.variables(x)[c(1,2,3,4,5)])
+```
+# How many workers are available each day to work ?
+```{r}
+get.variables(x)
+# The variables are labeled from x1, x2.......x7 where;
+
+# x1 = Number of workers assigned to shift 1 = 2.
+
+# x2 = Number of workers assigned to shift 2 = 6.
+
+# x3 = Number of workers assigned to shift 3 = 4.
+
+# x4 = Number of workers assigned to shift 4 = 0.
+
+# x5 = Number of workers assigned to shift 5 = 8.
+
+# x6 = Number of workers assigned to shift 6 = 2.
+
+# x7 = Number of workers assigned to shift 7 = 11.
+
+#the optimal solution of z = 25550.
+
+# By the variable values attained we can thereby get to see how many workers are available to work each day with respect to the objective function as well as the constraints framed by the organization.
+get.constraints(x)
+
+# Sunday = x2 + x3 + x4 + x5 + x6 = 20 Workers.
+
+# Monday = x3 + x4 + x5 + x6 + x7 = 25 Workers.
+
+# Tuesday = x4 + x5 + x6 + x7 + x1 = 22 Workers.
+
+# Wednesday = x5 + x6 + x7 + x1 + x2 = 28 Workers.
+
+# Thursday = x6 + x7 + x1 + x2 + x3 = 25 Workers.
+
+# Friday = x7 + x1 + x2 + x3 + x4 = 22 Workers.
+
+# Saturday = x1 + x2 + x3 + x4 + x5 = 20 Workers.
+```
